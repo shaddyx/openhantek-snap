@@ -1,0 +1,94 @@
+name: openhantek # you probably want to 'snapcraft register <name>'
+base: core # the base snap is the execution environment for this snap
+version: '0.1' # just for humans, typically '1.2+git' or '1.3.2'
+summary: OpenHantek build
+description: This is Openhantek snap, for using with hantek 6022BE oscilloscope
+  
+
+# grade: devel # must be 'stable' to release into candidate/stable channels
+# confinement: devmode # use 'strict' once you have the right plugs and slots
+
+
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+
+
+parts:
+  desktop-qt5:
+    plugin: make
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: qt
+    stage-packages:
+      - libxkbcommon0
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libqt5gui5
+      - libgdk-pixbuf2.0-0
+      - libqt5svg5 # for loading icon themes which are svg
+      - try: [appmenu-qt5] # not available on core18
+      - locales-all
+      - xdg-user-dirs
+      - fcitx-frontend-qt5
+
+  hantek:
+    # See 'snapcraft plugins'
+    plugin: cmake
+    source: OpenHantek-openhantek-e7e0c7b.tar.gz
+    build-packages: 
+      - g++ 
+      - cmake 
+      - qttools5-dev 
+      - qttools5-dev-tools 
+      - libfftw3-dev 
+      - binutils-dev 
+      - libusb-1.0-0-dev 
+      - libqt5opengl5-dev 
+      - mesa-common-dev 
+      - libgl1-mesa-dev 
+      - libgles2-mesa-dev
+    stage-packages:
+      - libdrm2
+      - libfftw3-double3
+      - libgl1-mesa-glx
+      - libglapi-mesa
+      - libgraphite2-3
+      - libharfbuzz0b
+      - libicu55
+      - libpcre16-3
+      - libqt5core5a
+      - libqt5gui5
+      - libqt5printsupport5
+      - libqt5widgets5
+      - libusb-1.0-0
+      - libx11-6
+      - libx11-xcb1
+      - libxau6
+      - libxcb-dri2-0
+      - libxcb-dri3-0
+      - libxcb-glx0
+      - libxcb-present0
+      - libxcb-sync1
+      - libxcb1
+      - libxdamage1
+      - libxdmcp6
+      - libxext6
+      - libxfixes3
+      - libxshmfence1
+      - libxxf86vm1
+apps:
+  openHantek:
+    command: desktop-launch OpenHantek
+    plugs:
+    - home
+    - raw-usb
+    - opengl
+    - x11
+    - wayland # let it run on wayland, because it's gtk3 so it should be fine
+    - desktop # needed for a lot of gtk3 and glib interaction with the host system
+    - desktop-legacy # needed for accessibility tools IIRC
+    - network-bind
+
